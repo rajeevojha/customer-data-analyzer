@@ -2,7 +2,7 @@ const express = require('express');
 const AWS = require('aws-sdk');
 const app = express();
 
-//AWS.config.update({ region: 'us-west-1'});
+AWS.config.update({ region: 'us-west-1'});
 
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -74,6 +74,26 @@ app.delete('/users/:id', async (req, res) => {
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send('Error deleting user');
+  }
+});
+
+app.get('/stats', async (req, res) => {
+  try {
+    const params = { TableName: TABLE_NAME };
+    const data = await dynamodb.scan(params).promise();
+    const users = data.Items;
+
+    // Aggregate by activity
+    const stats = users.reduce((acc, user) => {
+      const activity = user.activity || 'unknown';
+      acc[activity] = (acc[activity] || 0) + 1;
+      return acc;
+    }, {});
+
+    res.json(stats);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Error fetching stats');
   }
 });
 app.listen(3000, '0.0.0.0', () => console.log('Server running on port 3000'));

@@ -2,12 +2,9 @@ const express = require('express');
 const AWS = require('aws-sdk');
 const app = express();
 
-AWS.config.update({ region: 'us-west-1'});
+//AWS.config.update({ region: 'us-west-1'});
 
-/*AWS.config.update({ region: 'us-west-1',
-   accessKeyId: 'AKIAQZFG5DYQDYNU5Y5I', // Replace with your Access Key ID
-   secretAccessKey: '9QOfp/zilwNQ7STWqp16QQj0Xl80k2Tn0B+cHz3T'});
-*/
+
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = 'MyDynamoTable';
 

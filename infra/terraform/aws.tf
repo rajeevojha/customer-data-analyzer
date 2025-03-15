@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "us-west-1"
+}
+
 # Security Group
 resource "aws_security_group" "app_sg" {
   name        = "training-app-sg"

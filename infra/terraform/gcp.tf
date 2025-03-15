@@ -74,12 +74,14 @@ resource "google_compute_instance" "app" {
                          #!/bin/bash
                          rm -f /home/ubuntu/app
                          mkdir -p /home/ubuntu/app
-                         git clone https://github.com/rajeevojha/customer-data-analyzer.git /home/ubuntu/app
+      git clone https://github.com/rajeevojha/customer-data-analyzer.git /home/ubuntu/app 2>/tmp/git-error
+                         cd /home/ubuntu/app/scripts || echo "cd failed" >>/tmp/git-error
                          cp /home/ubuntu/app/node/gcp/app.js /home/ubuntu/app.js
                          cd /home/ubuntu/app/scripts
                          chmod +x install.sh gcp-section.sh run.ssh
                          bash   ./install.sh 2>/tmp/install-error
                          bash   ./gcp-section.sh 2>/tmp/gcp-error
+                            chown ubuntu:ubuntu -R /home/ubuntu/app
                             chmod -R 777 /home/ubuntu/app
                          bash   ./run.sh 2>/tmp/run-error
                             EOF
@@ -94,6 +96,19 @@ resource "google_compute_instance" "app" {
       user        = "ubuntu"
       private_key = file("~/.ssh/cloudg9")
       host        = self.network_interface[0].access_config[0].nat_ip
+    }
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "ls -ld /home/ubuntu /home/ubuntu/app /home/ubuntu/app/.env > /tmp/ls-out 2>/tmp/ls-error",
+      "whoami > /tmp/whoami-out",
+      "echo $SSH_CONNECTION >> /tmp/ssh-out"
+     ]
+    connection { 
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = file("~/.ssh/cloudg9")
+    host        = self.network_interface[0].access_config[0].nat_ip
     }
   }
 }

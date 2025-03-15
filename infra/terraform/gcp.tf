@@ -78,8 +78,8 @@ resource "google_compute_instance" "app" {
                             cp /home/ubuntu/app/node/aws/app.js /home/ubuntu/app.js
                             cd /home/ubuntu/app/scripts
                             chmod +x install.sh gcp-section.sh run.sh
-                            ./install.sh
-                            ./gcp-section.sh
+                            ./install.sh 2>/tmp/install-error
+                            ./gcp-section.sh 2>/tmp/gcp-error
                             chmod -R 777 /home/ubuntu/app
                             ./run.sh 2>/tmp/run-error
                             EOF

@@ -109,33 +109,10 @@ resource "aws_instance" "app" {
                   chmod +x install.sh gcp-section.sh run.sh
                   bash ./install.sh 2>/tmp/install-error
                   bash ./aws-section.sh 2>/tmp/aws-error
-                  chown ubuntu:ubuntu -R /home/ubuntu/app
-                  chmod -R 777 /home/ubuntu/app
+                  echo "REDIS_HOST={local.envs["REDIS_HOST"]}" >> /home/ubuntu/app/.env
+                  echo "REDIS_PASSWORD=${local.envs["REDIS_PASSWORD"]}" >> /home/ubuntu/app/.env
                   bash ./run.sh 2>/tmp/run-error
                   EOF
-  provisioner "file" {
-    source      = "../../.env"
-    destination = "/home/ubuntu/app/.env"
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-     private_key = file("/mnt/c/Users/rajeev/devl/cloud/aws/cloud9.pem")
-      host        = self.public_ip
-    }
-  }
-  provisioner "remote-exec" {
-    inline = [
-             "ls -ld /home/ubuntu /home/ubuntu/app /home/ubuntu/app/.env > /tmp/ls-out 2>/tmp/ls-error",
-      "whoami > /tmp/whoami-out",
-      "echo $SSH_CONNECTION >> /tmp/ssh-out"]
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = file("/mnt/c/Users/rajeev/devl/cloud/aws/cloud9.pem")
-      host        = self.public_ip
-    }
-  }
  }
 
 output "aws_ec2_ip" {

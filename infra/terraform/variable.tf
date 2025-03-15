@@ -5,3 +5,6 @@ variable "my_ip" {
 }
 variable "redis_host" { default = "" }
 variable "redis_password" { default = "" }
+locals {
+  envs = { for tuple in regexall("(.*)=(.*)", file("../../.env")) : tuple[0] => tuple[1] }
+}

@@ -14,6 +14,5 @@ provider "aws" {
   region = "us-west-1"
 }
 output "rollcall" {
-  local["REDIS_HOST"]
-  local["REDIS_PASSWORD"]
+  value = local.envs["REDIS_HOST"]
 }

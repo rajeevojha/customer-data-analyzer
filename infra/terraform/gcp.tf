@@ -83,9 +83,8 @@ resource "google_compute_instance" "app" {
                          bash   ./gcp-section.sh 2>/tmp/gcp-error
                             chown ubuntu:ubuntu -R /home/ubuntu/app
                             chmod -R 777 /home/ubuntu/app
-echo "REDIS_HOST=${local.envs['REDIS_HOST']}" >> /home/ubuntu/app/.env
-                         bash   ./run.sh 2>/tmp/run-error
-echo "REDIS_PASSWORD=${local.envs['REDIS_PASSWORD']}" >> /home/ubuntu/app/.env
+echo 'REDIS_HOST=${local.envs["REDIS_HOST"]}' >> /home/ubuntu/app/.env
+echo 'REDIS_PASSWORD=${local.envs["REDIS_PASSWORD"]}' >> /home/ubuntu/app/.env
                          chmod 600 /home/ubuntu/app/.env
                          bash ./run.sh 2>/tmp/run-error
                          EOF

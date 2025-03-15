@@ -12,7 +12,7 @@ const client = redis.createClient({
 });
 
 client.on('error', err => console.log('Redis Client Error', err));
-console.lg("RRRRRRRRRRRRR");
+console.log("RRRRRRRRRRRRR");
 client.connect();
 
 

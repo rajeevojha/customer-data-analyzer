@@ -110,8 +110,8 @@ resource "aws_instance" "app" {
                   bash ./install.sh 2>/tmp/install-error
                   bash ./aws-section.sh 2>/tmp/aws-error
                   touch /home/ubuntu/app/.env
-                  echo "REDIS_HOST=${local.envs['REDIS_HOST']}" >> /home/ubuntu/app/.env
-                  echo "REDIS_PASSWORD=${local.envs['REDIS_PASSWORD']}" >> /home/ubuntu/app/.env
+                  echo 'REDIS_HOST=${local.envs["REDIS_HOST"]}' >> /home/ubuntu/app/.env
+                  echo 'REDIS_PASSWORD=${local.envs["REDIS_PASSWORD"]}' >> /home/ubuntu/app/.env
                   chmod 600 /home/ubuntu/app/.env
                   bash ./run.sh 2>/tmp/run-error
                   EOF

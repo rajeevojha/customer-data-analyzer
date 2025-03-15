@@ -1,126 +1,64 @@
 provider "aws" {
-  region = "us-west-1"
+  region = "us-west-1"  # Adjust
 }
 
-# Security Group
-resource "aws_security_group" "app_sg" {
-  name        = "training-app-sg"
-  description = "Allow 22, 3000 and 5432"
-  ingress {
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    cidr_blocks = ["${var.my_ip}/32"]
-  }
-
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["${var.my_ip}/32"]
-  }
-                                    
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-# IAM Role
-resource "aws_iam_role" "ec2_role" {
-  name = "training-ec2-role"
+resource "aws_iam_role" "lambda_exec" {
+  name = "lambda_exec_role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
       Action = "sts:AssumeRole"
       Effect = "Allow"
-      Principal = { Service = "ec2.amazonaws.com" }
+      Principal = { Service = "lambda.amazonaws.com" }
     }]
   })
 }
 
-# IAM Policy
-resource "aws_iam_policy" "ec2_policy" {
-  name = "training-ec2-policy"
+resource "aws_iam_role_policy" "lambda_policy" {
+  role = aws_iam_role.lambda_exec.id
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = ["s3:GetObject", "s3:PutObject"]
-        Resource = [
-          "arn:aws:s3:::customer-data-training-ro",
-          "arn:aws:s3:::customer-data-training-ro/*"
-        ]
-      },
-      {
-        Effect = "Allow"
-        Action = ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"]
-        Resource = "arn:aws:logs:us-west-1:054037126688:log-group:training-aws:*"
-      },
-      # CloudWatch perms
-      {
-        "Effect": "Allow",
-        "Action": [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ],
-        "Resource": "*"
-      }
-    ]
+    Statement = [{
+      Action = ["logs:*"]
+      Effect = "Allow"
+      Resource = "*"
+    }]
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ec2_policy_attach" {
-  role       = aws_iam_role.ec2_role.name
-  policy_arn = aws_iam_policy.ec2_policy.arn
+resource "aws_lambda_function" "redis_counter" {
+  filename      = "../../node/aws/lambda.zip"
+  function_name = "redis_counter"
+  role          = aws_iam_role.lambda_exec.arn
+  handler       = "app.handler"
+  runtime       = "nodejs18.x"
+  environment {
+    variables = {
+      REDIS_HOST     = local.envs["REDIS_HOST"]
+      REDIS_PASSWORD = local.envs["REDIS_PASSWORD"]
+    }
+  }
 }
 
-resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "training-ec2-profile"
-  role = aws_iam_role.ec2_role.name
-}
-#resource "aws_ssm_parameter" "redis_host" {
-#  name  = "/redis/host"
-#  type  = "SecureString"
-#  value = var.redis_host
-#}
-#resource "aws_ssm_parameter" "redis_password" {
-#  name  = "/redis/password"
-#  type  = "SecureString"
-#  value = var.redis_password
-#}
-# AWS EC2
-resource "aws_instance" "app" {
-  ami           = "ami-07d2649d67dbe8900" # Ubuntu 22.04 us-west-1
-  instance_type = "t3.micro"
-  key_name      = "cloud9"       # e.g., my-key (from AWS EC2 > Key Pairs)
-  tags          = { Name = "training-aws" }
-  vpc_security_group_ids = [aws_security_group.app_sg.id]
-  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
-  user_data     = <<-EOF
-                 #!/bin/bash
-                  rm -f /home/ubuntu/app
-                  mkdir -p /home/ubuntu/app
-                  git clone https://github.com/rajeevojha/customer-data-analyzer.git /home/ubuntu/app 2>/tmp/git-error
-                  cd /home/ubuntu/app/scripts || echo "cd failed" >>/tmp/git-error 
-                  cp /home/ubuntu/app/node/aws/app.js /home/ubuntu/app.js
-                  cd /home/ubuntu/app/scripts
-                  chmod +x install.sh gcp-section.sh run.sh
-                  bash ./install.sh 2>/tmp/install-error
-                  bash ./aws-section.sh 2>/tmp/aws-error
-                  touch /home/ubuntu/app/.env
-                  echo 'REDIS_HOST=${local.envs["REDIS_HOST"]}' >> /home/ubuntu/app/.env
-                  echo 'REDIS_PASSWORD=${local.envs["REDIS_PASSWORD"]}' >> /home/ubuntu/app/.env
-                  chmod 600 /home/ubuntu/app/.env
-                  bash ./run.sh 2>/tmp/run-error
-                  EOF
- }
-
-output "aws_ec2_ip" {
-  value = replace(aws_instance.app.public_ip,".","-")
+resource "aws_sfn_state_machine" "counter_game" {
+  name     = "redis_counter_game"
+  role_arn = aws_iam_role.lambda_exec.arn
+  definition = <<EOF
+  {
+    "Comment": "Count for 10 minutes",
+    "StartAt": "PushCounter",
+    "States": {
+      "PushCounter": {
+        "Type": "Task",
+        "Resource": "${aws_lambda_function.redis_counter.arn}",
+        "Next": "Wait"
+      },
+      "Wait": {
+        "Type": "Wait",
+        "Seconds": 600,
+        "End": true
+      }
+    }
+  }
+  EOF
 }

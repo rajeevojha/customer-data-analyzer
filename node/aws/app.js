@@ -1,25 +1,16 @@
-const express = require('express');
 const redis = require('redis');
-const app = express();
-require ('dotenv').config();
-const client = redis.createClient({
-    username: 'default',
-    password: process.env.REDIS_PASSWORD,
-    socket: {
-        host: process.env.REDIS_HOST,
-        port: 13462
-    }
-});
 
-client.on('error', err => console.log('Redis Client Error', err));
-console.log("RRRRRRRRRRRRR");
-client.connect();
-
-
-app.get('/', async (req, res) => {
-  await client.incr('visits');
-  const visits = await client.get('visits');
-  res.send(`Hello World! Visits: ${visits}`);
-});
-
-app.listen(3000, () => console.log('Running on 3000'));
+exports.handler = async (event) => {
+  const client = redis.createClient({
+      username: 'default',
+      password: process.env.REDIS_PASSWORD,
+      socket: {
+          host: process.env.REDIS_HOST,
+          port: 13462
+      }
+  });
+  await client.connect();
+  const count = await client.incr('game_counter');
+  await client.quit();
+  return { statusCode: 200, body: `Lambda Count: ${count}` };
+};

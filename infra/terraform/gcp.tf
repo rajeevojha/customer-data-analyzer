@@ -71,17 +71,17 @@ resource "google_compute_instance" "app" {
     scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   } 
   metadata_startup_script = <<-EOF
-                            #!/bin/bash
-                            rm -f /home/ubuntu/app
-                            mkdir -p /home/ubuntu/app
-                            git clone https://github.com/rajeevojha/customer-data-analyzer.git /home/ubuntu/app
-                            cp /home/ubuntu/app/node/aws/app.js /home/ubuntu/app.js
-                            cd /home/ubuntu/app/scripts
-                            chmod +x install.sh gcp-section.sh run.sh
-                            ./install.sh 2>/tmp/install-error
-                            ./gcp-section.sh 2>/tmp/gcp-error
+                         #!/bin/bash
+                         rm -f /home/ubuntu/app
+                         mkdir -p /home/ubuntu/app
+                         git clone https://github.com/rajeevojha/customer-data-analyzer.git /home/ubuntu/app
+                         cp /home/ubuntu/app/node/gcp/app.js /home/ubuntu/app.js
+                         cd /home/ubuntu/app/scripts
+                         chmod +x install.sh gcp-section.sh run.ssh
+                         bash   ./install.sh 2>/tmp/install-error
+                         bash   ./gcp-section.sh 2>/tmp/gcp-error
                             chmod -R 777 /home/ubuntu/app
-                            ./run.sh 2>/tmp/run-error
+                         bash   ./run.sh 2>/tmp/run-error
                             EOF
   metadata = {
     "ssh-keys" = "ubuntu:${file("~/.ssh/cloudg9.pub")}"

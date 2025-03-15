@@ -1,7 +1,8 @@
 FROM node:18-slim
 WORKDIR /app
-COPY package.json app.js ./
-COPY data/ ./data/ # add the data folder
+COPY node/aws/app.js node/aws/package.json  ./
+COPY data/ ./data/
+
 RUN npm install express redis dotenv
 EXPOSE 3000
 CMD ["node", "app.js"]

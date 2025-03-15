@@ -1,3 +1,8 @@
+provider "google" {
+  project = "carbide-ether-452420-i7"  # From GCP Console > Project Info
+  region  = "us-west1"
+}
+
 resource "google_service_account" "vm_access" {
   account_id   = "vm-access"
   display_name = "VM Storage Access"

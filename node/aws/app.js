@@ -1,7 +1,7 @@
 const express = require('express');
 const redis = require('redis');
 const app = express();
-require ('dotenv').config();
+const ('dotenv').config();
 const client = redis.createClient({
     username: 'default',
     password: process.env.REDIS_PASSWORD,
@@ -12,7 +12,7 @@ const client = redis.createClient({
 });
 
 client.on('error', err => console.log('Redis Client Error', err));
-
+console.lg("RRRRRRRRRRRRR");
 client.connect();
 
 

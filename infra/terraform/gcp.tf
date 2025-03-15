@@ -83,33 +83,13 @@ resource "google_compute_instance" "app" {
                          bash   ./gcp-section.sh 2>/tmp/gcp-error
                             chown ubuntu:ubuntu -R /home/ubuntu/app
                             chmod -R 777 /home/ubuntu/app
+echo "REDIS_HOST={local.envs["REDIS_HOST"]}" >> /home/ubuntu/app/.env
                          bash   ./run.sh 2>/tmp/run-error
+echo "REDIS_PASSWORD=${local.envs["REDIS_PASSWORD"]}" >> /home/ubuntu/app/.env
+echo "REDIS_PASSWORD" >> /home/ubuntu/app/.env
                             EOF
   metadata = {
     "ssh-keys" = "ubuntu:${file("~/.ssh/cloudg9.pub")}"
-  }
-  provisioner "file" {
-    source      = "../../.env"
-    destination = "/home/ubuntu/app/.env"
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = file("~/.ssh/cloudg9")
-      host        = self.network_interface[0].access_config[0].nat_ip
-    }
-  }
-  provisioner "remote-exec" {
-    inline = [
-      "ls -ld /home/ubuntu /home/ubuntu/app /home/ubuntu/app/.env > /tmp/ls-out 2>/tmp/ls-error",
-      "whoami > /tmp/whoami-out",
-      "echo $SSH_CONNECTION >> /tmp/ssh-out"
-     ]
-    connection { 
-    type        = "ssh"
-    user        = "ubuntu"
-    private_key = file("~/.ssh/cloudg9")
-    host        = self.network_interface[0].access_config[0].nat_ip
-    }
   }
 }
 

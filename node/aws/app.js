@@ -1,7 +1,7 @@
 const express = require('express');
 const redis = require('redis');
 const app = express();
-const ('dotenv').config();
+require ('dotenv').config();
 const client = redis.createClient({
     username: 'default',
     password: process.env.REDIS_PASSWORD,

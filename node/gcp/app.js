@@ -1,4 +1,4 @@
-const ('dotenv').config();
+require ('dotenv').config();
 const express = require('express');
 const redis = require('redis');
 const app = express();

@@ -22,6 +22,9 @@ resource "google_cloudfunctions_function" "redis_counter" {
   source_archive_object = google_storage_bucket_object.function_code.name
   environment_variables = {
     REDIS_HOST = local.envs["REDIS_HOST"]  # Replace with local IP later
+    REDIS_PORT = local.envs["REDIS_PORT"]  # Replace with local IP later
+    REDIS_USER = local.envs["REDIS_USER"]  # Replace with local IP later
+    REDIS_PASSWORD = local.envs["REDIS_PASSWORD"]  # Replace with local IP later
   }
   event_trigger {
     event_type = "google.pubsub.topic.publish"
@@ -38,7 +41,7 @@ resource "google_cloud_scheduler_job" "trigger_job" {
   schedule    = "*/4 * * * *"  # Every 4s
   pubsub_target {
     topic_name = google_pubsub_topic.trigger.id
-    data       = base64encode("trigger")
+    data       = base64encode("{\"source\": \"gcp\"}")
   }
 }
 resource "random_id" "bucket_suffix" {

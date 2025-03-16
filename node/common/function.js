@@ -2,11 +2,12 @@ const redis = require('redis');
 
 async function hitCounter(source) {
   const client = redis.createClient({
-      username: process.env.REDIS_USER,
-      password: process.env.REDIS_PASSWORD,
+      console.log(`Connecting to ${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`);
+      username: process.env.REDIS_USER||'default',
+      password: process.env.REDIS_PASSWORD||'',
       socket: {
-          host: process.env.REDIS_HOST,
-          port: process.env.REDIS_PORT
+          host: process.env.REDIS_HOST||'redis-local',
+          port: parseInt(process.env.REDIS_PORT) || 6379
       }
   });
   //const client = redis.createClient({ url: 'redis://host.docker.internal:6379' });
@@ -23,8 +24,8 @@ async function hitCounter(source) {
 // Lambda handler
 exports.handler = async (event) => {
   const source = event.source || 'gcp';
-  const score = await hitCounter('aws');
-  return { statusCode: 200, body: `AWS Score: ${score}` };
+  const score = await hitCounter(source);
+  return { statusCode: 200, body: `${source} Score: ${score}` };
 };
 
 // Local run (Docker, GCP)

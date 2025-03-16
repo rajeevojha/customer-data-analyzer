@@ -30,12 +30,14 @@ resource "aws_lambda_function" "redis_counter" {
   filename      = "../../node/common/function.zip"
   function_name = "redis_counter"
   role          = aws_iam_role.lambda_exec.arn
-  handler       = "app.handler"
+  handler       = "function.handler"
   runtime       = "nodejs18.x"
   environment {
     variables = {
       REDIS_HOST     = local.envs["REDIS_HOST"]
       REDIS_PASSWORD = local.envs["REDIS_PASSWORD"]
+      REDIS_PORT     = local.envs["REDIS_PORT"]
+      REDIS_USER     = local.envs["REDIS_USER"]
     }
   }
 }

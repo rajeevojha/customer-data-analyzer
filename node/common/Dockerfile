@@ -1,5 +1,5 @@
 FROM node:18-slim
 WORKDIR /app
-COPY node/common/package.json node/common/app.js ./
+COPY node/common/package.json node/common/function.js ./
 RUN npm install redis
-CMD ["node", "app.js", "docker", "2000"]
+CMD ["node", "function.js", "docker", "2000"]

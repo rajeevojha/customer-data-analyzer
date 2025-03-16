@@ -27,7 +27,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 }
 
 resource "aws_lambda_function" "redis_counter" {
-  filename      = "../../node/aws/lambda.zip"
+  filename      = "../../node/common/function.zip"
   function_name = "redis_counter"
   role          = aws_iam_role.lambda_exec.arn
   handler       = "app.handler"
@@ -45,7 +45,6 @@ resource "aws_sfn_state_machine" "counter_game" {
   role_arn = aws_iam_role.lambda_exec.arn
   definition = <<EOF
   {
-    "Comment": "Count for 10 minutes",
     "StartAt": "PushCounter",
     "States": {
       "PushCounter": {
@@ -55,9 +54,15 @@ resource "aws_sfn_state_machine" "counter_game" {
       },
       "Wait": {
         "Type": "Wait",
-        "Seconds": 600,
-        "End": true
-      }
+        "Seconds": 5,
+        "Next": "CheckTime"
+      },
+      "CheckTime": {
+        "Type": "Choice",
+        "Choices": [{ "Variable": "$.time", "NumericLessThan": 3600, "Next": "PushCounter" }],
+        "Default": "Done"
+      },
+      "Done": { "Type": "Succeed" }
     }
   }
   EOF

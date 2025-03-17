@@ -2,7 +2,6 @@ const redis = require('redis');
 
 async function hitCounter(source) {
   const client = redis.createClient({
-      console.log(`Connecting to ${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`);
       username: process.env.REDIS_USER||'default',
       password: process.env.REDIS_PASSWORD||'',
       socket: {
@@ -23,16 +22,25 @@ async function hitCounter(source) {
 
 // Lambda handler
 exports.handler = async (event) => {
-  const source = event.source || 'gcp';
+  const message = event.data
+   ? JSON.parse(Buffer.from(event.data, 'base64').toString())
+   : {};
+  const source = message.source || 'aws';
   const score = await hitCounter(source);
   return { statusCode: 200, body: `${source} Score: ${score}` };
 };
 
-// Local run (Docker, GCP)
 if (require.main === module) {
   const source = process.argv[2] || 'docker';
+  const interval = parseInt(process.argv[3]) || 2000;
+  console.log(`Starting ${source} with interval ${interval}ms`);
   setInterval(async () => {
-    const score = await hitCounter(source);
-    console.log(`${source} Score: ${score}`);
-  }, parseInt(process.argv[3]) || 2000);
-}
+    try {
+      const score = await hitCounter(source);
+      console.log(`${source} Score: ${score}`);
+    } catch (e) {
+      console.error(`Error: ${e.message}`);
+    }
+  }, interval);
+  process.on('SIGTERM', () => process.exit(0));
+}// Local run (Docker, GCP)

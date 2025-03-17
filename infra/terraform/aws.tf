@@ -9,7 +9,7 @@ resource "aws_iam_role" "lambda_exec" {
     Statement = [{
       Action = "sts:AssumeRole"
       Effect = "Allow"
-      Principal = { Service = "lambda.amazonaws.com" }
+      Principal = { Service =  ["lambda.amazonaws.com", "states.amazonaws.com"]}
     }]
   })
 }
@@ -19,10 +19,16 @@ resource "aws_iam_role_policy" "lambda_policy" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Action = ["logs:*"]
+      Action = "logs:*"
       Effect = "Allow"
       Resource = "*"
-    }]
+    },
+     {
+      Action = "lambda:InvokeFunction"
+      Effect = "Allow"
+      Resource = aws_lambda_function.redis_counter.arn
+     }
+     ]
   })
 }
 
@@ -52,6 +58,7 @@ resource "aws_sfn_state_machine" "counter_game" {
       "PushCounter": {
         "Type": "Task",
         "Resource": "${aws_lambda_function.redis_counter.arn}",
+        "ResultPath": "$.result",
         "Next": "Wait"
       },
       "Wait": {
@@ -61,10 +68,18 @@ resource "aws_sfn_state_machine" "counter_game" {
       },
       "CheckTime": {
         "Type": "Choice",
-        "Choices": [{ "Variable": "$.time", "NumericLessThan": 3600, "Next": "PushCounter" }],
+        "Choices": [
+          {
+            "Variable": "$.time",
+            "NumericLessThan": 3600,
+            "Next": "PushCounter"
+          }
+        ],
         "Default": "Done"
       },
-      "Done": { "Type": "Succeed" }
+      "Done": {
+        "Type": "Succeed"
+      }
     }
   }
   EOF

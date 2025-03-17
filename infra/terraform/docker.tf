@@ -18,7 +18,7 @@ provider "docker" {
 resource "docker_image" "redis_app" {
   name = "redis-app:latest"
   build {
-    context = "../../"
+    context = "../.."
     dockerfile = "node/common/Dockerfile"
   }
 }
@@ -35,5 +35,5 @@ resource "docker_container" "redis_app" {
         "REDIS_USER=${local.envs["REDIS_USER"]}",
         "REDIS_PASSWORD=${local.envs["REDIS_PASSWORD"]}"
   ]
-  command = ["node","app.js","docker","2000"]
+  command = ["node","function.js","docker","2000"]
 }

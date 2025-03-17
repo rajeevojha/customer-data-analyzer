@@ -14,6 +14,10 @@ resource "google_storage_bucket_object" "function_code" {
   source = "../../node/common/function.zip"  # Zip without inline
 }
 
+
+resource "google_pubsub_topic" "trigger" {
+  name = "redis-counter-trigger"
+}
 resource "google_cloudfunctions_function" "redis_counter" {
   name        = "redis-counter"
   runtime     = "nodejs18"
@@ -21,10 +25,10 @@ resource "google_cloudfunctions_function" "redis_counter" {
   source_archive_bucket = google_storage_bucket.function_bucket.name
   source_archive_object = google_storage_bucket_object.function_code.name
   environment_variables = {
-    REDIS_HOST = local.envs["REDIS_HOST"]  # Replace with local IP later
-    REDIS_PORT = local.envs["REDIS_PORT"]  # Replace with local IP later
-    REDIS_USER = local.envs["REDIS_USER"]  # Replace with local IP later
-    REDIS_PASSWORD = local.envs["REDIS_PASSWORD"]  # Replace with local IP later
+    REDIS_HOST = local.envs["REDIS_HOST"]
+    REDIS_PORT = local.envs["REDIS_PORT"]  
+    REDIS_USER = local.envs["REDIS_USER"] 
+    REDIS_PASSWORD = local.envs["REDIS_PASSWORD"] 
   }
   event_trigger {
     event_type = "google.pubsub.topic.publish"
@@ -32,13 +36,9 @@ resource "google_cloudfunctions_function" "redis_counter" {
   }
 }
 
-resource "google_pubsub_topic" "trigger" {
-  name = "redis-counter-trigger"
-}
-
 resource "google_cloud_scheduler_job" "trigger_job" {
   name        = "redis-counter-scheduler"
-  schedule    = "*/4 * * * *"  # Every 4s
+  schedule    = "*/1 * * * *"  # Schedule to run every 1 minute
   pubsub_target {
     topic_name = google_pubsub_topic.trigger.id
     data       = base64encode("{\"source\": \"gcp\"}")

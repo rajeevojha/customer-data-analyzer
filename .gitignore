@@ -1,9 +1,10 @@
 # Terraform
 .env
-infra/terraform/.terraform/
-*.tfstate
-*.tfstate.backup
-*.tfstate.lock
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.backup
+**/*.tfstate.lock
 terraform.tfvars
+.zip
 .log
 node_modules/

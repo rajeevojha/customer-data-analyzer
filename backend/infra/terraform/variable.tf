@@ -1,3 +1,8 @@
+variable "api_url" {
+  description = "ip of the database"
+  type        = string
+  default     = "http://localhost:3001"
+}
 variable "my_ip" {
   description = "Your public IP for SSH and app access"
   type        = string

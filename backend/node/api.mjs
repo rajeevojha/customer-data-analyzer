@@ -1,8 +1,9 @@
-const express = require('express');
-require ('dotenv').config();
-const redis = require('redis');
+import express from 'express';
+import redis from 'redis';
+import cors from 'cors'
+import "dotenv/config.js";
+
 const app = express();
-const cors = require('cors');
 
 app.use(cors());
 app.use(express.json());

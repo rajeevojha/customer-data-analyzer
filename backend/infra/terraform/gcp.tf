@@ -32,6 +32,11 @@ resource "google_cloudfunctions_function" "redis_counter" {
     resource   = google_pubsub_topic.trigger.name
   }
 }
+resource "google_storage_bucket_object" "function_zip" {
+  name   = "function.zip"
+  bucket = google_storage_bucket.function_bucket.name
+  source = "../../node/common/function.zip"  # Zip—with—.mjs
+}
 
 resource "google_cloud_scheduler_job" "trigger_job" {
   name        = "redis-counter-scheduler"

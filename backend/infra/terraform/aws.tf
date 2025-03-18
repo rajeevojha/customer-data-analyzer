@@ -63,7 +63,7 @@ resource "aws_sfn_state_machine" "counter_game" {
       },
       "Wait": {
         "Type": "Wait",
-        "Seconds": 5,
+        "Seconds": 45,
         "Next": "CheckTime"
       },
       "CheckTime": {

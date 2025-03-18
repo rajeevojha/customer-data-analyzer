@@ -4,5 +4,5 @@ variable "my_ip" {
   default     = "0.0.0.0"  # Allow all (temp for testing)
 }
 locals {
-  envs = { for tuple in regexall("(.*)=(.*)", file("../../.env")) : tuple[0] => tuple[1] }
+  envs = { for tuple in regexall("(.*)=(.*)", file("../../../.env")) : tuple[0] => tuple[1] }
 }

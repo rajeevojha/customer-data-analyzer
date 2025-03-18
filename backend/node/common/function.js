@@ -1,6 +1,7 @@
-const redis = require('redis');
+const fetch = require('node-fetch');
+//const redis = require('redis');
 
-async function hitCounter(source) {
+/* async function hitCounter(source) {
   const client = redis.createClient({
     username: process.env.REDIS_USER || 'default',
     password: process.env.REDIS_PASSWORD || '',
@@ -33,7 +34,16 @@ async function hitCounter(source) {
   await client.quit();
   return score;
 }
-
+*/
+async function hitCounter(source) {
+  const response = await fetch('http://localhost:3001/hit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ source })
+  });
+  const data = await response.json();
+  return data.score;
+}
 exports.handler = async (event) => {
   const message = event.data ? JSON.parse(Buffer.from(event.data, 'base64').toString()) : {};
   const source = message.source || 'aws';

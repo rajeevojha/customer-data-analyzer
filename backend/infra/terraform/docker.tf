@@ -30,10 +30,7 @@ resource "docker_container" "redis_app" {
     external = 3000
   }
   env = [
-        "REDIS_HOST=${local.envs["REDIS_HOST"]}",
-        "REDIS_PORT=${local.envs["REDIS_PORT"]}",
-        "REDIS_USER=${local.envs["REDIS_USER"]}",
-        "REDIS_PASSWORD=${local.envs["REDIS_PASSWORD"]}"
+    "API_URL = var.api_url"
   ]
   command = ["node","function.js","docker","20000"]
 }

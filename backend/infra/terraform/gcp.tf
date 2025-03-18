@@ -25,10 +25,7 @@ resource "google_cloudfunctions_function" "redis_counter" {
   source_archive_bucket = google_storage_bucket.function_bucket.name
   source_archive_object = google_storage_bucket_object.function_code.name
   environment_variables = {
-    REDIS_HOST = local.envs["REDIS_HOST"]
-    REDIS_PORT = local.envs["REDIS_PORT"]  
-    REDIS_USER = local.envs["REDIS_USER"] 
-    REDIS_PASSWORD = local.envs["REDIS_PASSWORD"] 
+    API_URL = var.api_url
   }
   event_trigger {
     event_type = "google.pubsub.topic.publish"

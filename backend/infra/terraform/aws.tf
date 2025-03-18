@@ -40,10 +40,7 @@ resource "aws_lambda_function" "redis_counter" {
   runtime       = "nodejs18.x"
   environment {
     variables = {
-      REDIS_HOST     = local.envs["REDIS_HOST"]
-      REDIS_PASSWORD = local.envs["REDIS_PASSWORD"]
-      REDIS_PORT     = local.envs["REDIS_PORT"]
-      REDIS_USER     = local.envs["REDIS_USER"]
+      API_URL = var.api_url
     }
   }
 }

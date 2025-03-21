@@ -97,12 +97,19 @@ resource "aws_lambda_permission" "api_gateway" {
 }
 resource "local_file" "docker_env" {
   content = <<EOF
-API_URL=${aws_api_gateway_deployment.redis_api.invoke_url}
-EOF
-filename = "${path.cwd}/docker.env"
-depends_on = [aws_api_gateway_deployment.redis_api]
+  API_URL=${aws_api_gateway_deployment.redis_api.invoke_url}
+  EOF
+  filename = "${path.cwd}/docker.env"
+  depends_on = [aws_api_gateway_deployment.redis_api]
 }
 
+resource "local_file" "vue_env" {
+  content = <<EOF
+  VUE_APP_API_URL=${aws_api_gateway_deployment.redis_api.invoke_url}
+  EOF
+  filename = "${path.module}/../../../ui/vue/.env.local"
+  depends_on = [aws_api_gateway_deployment.redis_api]
+}
 output "env_variables" {
   value = {
     redis_host     = try(local.envs["REDIS_HOST"], "not_set")

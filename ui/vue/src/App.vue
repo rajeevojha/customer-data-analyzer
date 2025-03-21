@@ -7,6 +7,7 @@
 
 <script>
 import ScoreCard from './components/ScoreCard.vue';
+const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
   name: 'App',
@@ -20,7 +21,8 @@ export default {
   },
   methods: {
     async updateScores() {
-      const response = await fetch('http://localhost:3001/scores');
+      
+      const response = await fetch(`${API_URL}/scores`);
       this.scores = await response.json();
     }
   }

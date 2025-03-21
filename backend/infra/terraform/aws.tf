@@ -38,16 +38,17 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
 }
 
 resource "aws_lambda_function" "redis_counter" {
-  filename      = "../../node/common/function.zip"
+  filename      = "../../node/common/function.zip" #the hitter code
   function_name = "redis_counter"
   role          = aws_iam_role.lambda_exec.arn
-  handler       = "function.handler"
+  handler       = "index.handler"
   runtime       = "nodejs18.x"
   environment {
     variables = {
-      API_URL = "${aws_api_gateway_deployment.redis_api.invoke_url}/prod"
+      API_URL = aws_api_gateway_deployment.redis_api.invoke_url
     }
   }
+ depends_on = [aws_api_gateway_deployment.redis_api]
 }
 
 resource "aws_sfn_state_machine" "counter_game" {
@@ -73,7 +74,7 @@ resource "aws_sfn_state_machine" "counter_game" {
         "Choices": [
           {
             "Variable": "$.time",
-            "NumericLessThan": 3600,
+            "NumericLessThan": 600,
             "Next": "PushCounter"
           }
         ],

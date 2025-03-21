@@ -1,11 +1,10 @@
 import redis from 'redis';
-console.log('REDIS_HOST:', process.env.REDIS_HOST);
-console.log('REDIS_USER:', process.env.REDIS_USER);
+
 const client = redis.createClient({
    username: process.env.REDIS_USER || 'default',
-   password: process.env.REDIS_PASSWORD || 'm',
+   password: process.env.REDIS_PASSWORD || 'password',
    socket: {
-     host: process.env.REDIS_HOST || '-cloud.com',
+     host: process.env.REDIS_HOST || 'cloud.com',
      port: parseInt(process.env.REDIS_PORT) || 13462
    }
  });

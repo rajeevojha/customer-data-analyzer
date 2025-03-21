@@ -8,6 +8,9 @@ terraform {
       source  = "hashicorp/google"
       version = "6.25.0"  # Latest as of Mar 2025
     }
+    local = {
+      source = "hashicorp/local"
+    }
   }
 }
 

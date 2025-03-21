@@ -8,34 +8,31 @@ resource "google_storage_bucket" "function_bucket" {
   location = "US"
 }
 
-resource "google_storage_bucket_object" "function_code" {
+resource "google_storage_bucket_object" "function_zip" {
   name   = "function.zip"
   bucket = google_storage_bucket.function_bucket.name
-  source = "../../node/common/function.zip"  # Zip without inline
+  source = "../../node/common/function.zip"  # Zip with hitter code
 }
 
 
 resource "google_pubsub_topic" "trigger" {
   name = "redis-counter-trigger"
 }
+
 resource "google_cloudfunctions_function" "redis_counter" {
   name        = "redis-counter"
   runtime     = "nodejs18"
   entry_point = "handler"
   source_archive_bucket = google_storage_bucket.function_bucket.name
-  source_archive_object = google_storage_bucket_object.function_code.name
+  source_archive_object = google_storage_bucket_object.function_zip.name
   environment_variables = {
-    API_URL = var.api_url
+    API_URL = aws_api_gateway_deployment.redis_api.invoke_url
   }
   event_trigger {
     event_type = "google.pubsub.topic.publish"
     resource   = google_pubsub_topic.trigger.name
   }
-}
-resource "google_storage_bucket_object" "function_zip" {
-  name   = "function.zip"
-  bucket = google_storage_bucket.function_bucket.name
-  source = "../../node/common/function.zip"  # Zip—with—.mjs
+ depends_on = [aws_api_gateway_deployment.redis_api]
 }
 
 resource "google_cloud_scheduler_job" "trigger_job" {

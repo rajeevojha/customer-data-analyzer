@@ -6,5 +6,5 @@
 **/*.tfstate.lock
 terraform.tfvars
 **/*.zip
-**/.log
+**/*.log
 node_modules/

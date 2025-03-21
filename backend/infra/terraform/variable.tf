@@ -7,7 +7,7 @@ variable "my_ip" {
 variable "api_url" {
   description = "api url created during bla bla bl"
   type        = string
-  default     = "not se0"  
+  default     = "not set"  
 }
 locals {
   envs = { for tuple in regexall("(.*)=(.*)", file("../../../.env")) : tuple[0] => tuple[1] }

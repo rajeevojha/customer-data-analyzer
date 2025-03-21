@@ -32,6 +32,11 @@ resource "aws_iam_role_policy" "lambda_policy" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_policy" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
 resource "aws_lambda_function" "redis_counter" {
   filename      = "../../node/common/function.zip"
   function_name = "redis_counter"
@@ -40,7 +45,7 @@ resource "aws_lambda_function" "redis_counter" {
   runtime       = "nodejs18.x"
   environment {
     variables = {
-      API_URL = var.api_url
+      API_URL = "${aws_api_gateway_deployment.redis_api.invoke_url}/prod"
     }
   }
 }

@@ -1,12 +1,13 @@
-variable "api_url" {
-  description = "ip of the database"
-  type        = string
-  default     = "http://localhost:3001"
-}
 variable "my_ip" {
   description = "Your public IP for SSH and app access"
   type        = string
   default     = "0.0.0.0"  # Allow all (temp for testing)
+}
+
+variable "api_url" {
+  description = "api url created during bla bla bl"
+  type        = string
+  default     = "not se0"  
 }
 locals {
   envs = { for tuple in regexall("(.*)=(.*)", file("../../../.env")) : tuple[0] => tuple[1] }

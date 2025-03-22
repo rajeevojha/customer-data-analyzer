@@ -25,12 +25,8 @@ jobs:
           cd ui/vue
           npm run build  # Creates dist/ folder
 
-      - name: Build Vue app
-        working-directory: .vue
-        run: npm run build
-
       - name: Zip Vue app
-        working-directory: .vue
+        working-directory: ui/vue
         run: zip -r vue-app.zip dist .env.local
 
       - name: Configure AWS credentials

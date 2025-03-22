@@ -1,7 +1,7 @@
 name: Deploy Vue to Elastic Beanstalk
 on:
   push:
-    branches: [centralized-db]  # Runs when you push to master
+    branches: [master]  # Runs when you push to master
 
 jobs:
   deploy:
@@ -26,11 +26,11 @@ jobs:
           npm run build  # Creates dist/ folder
 
       - name: Build Vue app
-        working-directory: ./ui/vue
+        working-directory: /ui/vue
         run: npm run build
 
       - name: Zip Vue app
-        working-directory: .ui/vue
+        working-directory: ui/vue
         run: zip -r vue-app.zip dist .env.local
 
       - name: Configure AWS credentials

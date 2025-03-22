@@ -27,7 +27,7 @@ jobs:
 
       - name: Zip Vue app
         working-directory: ui/vue
-        run: zip -r vue-app.zip dist .env.local package.json
+        run: zip -r vue-app.zip dist server.js .env.local package.json
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2

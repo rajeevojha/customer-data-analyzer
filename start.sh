@@ -38,14 +38,14 @@ else
 fi
 
 # 5. Vue UI—Start (optional—uncomment)
- cd "$ROOT_DIR/ui/vue"
- npm install &>/dev/null
- npm run serve &  # Background
- echo "Vue UI—running—http://localhost:$VUE_PORT"
+# cd "$ROOT_DIR/ui/vue"
+# npm install &>/dev/null
+# npm run serve &  # Background
+# echo "Vue UI—running—http://localhost:$VUE_PORT"
 
 echo "Setup—complete! Check scores:"
 echo "  - API: curl http://localhost:$API_PORT/scores"
 echo "  - AWS: aws logs tail /aws/lambda/redis_counter"
 echo "  - GCP: gcloud functions logs read redis-counter"
 echo "  - Docker: docker logs redis-app"
-echo "  - UI: http://localhost:$VUE_PORT"
+#echo "  - UI: http://localhost:$VUE_PORT"

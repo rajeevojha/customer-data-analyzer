@@ -46,3 +46,4 @@ jobs:
           version_label: ${{ github.sha }}  # Unique version per push
           region: us-west-1
           deployment_package: ui/vue/vue-app.zip
+          use_existing_version_if_available: true

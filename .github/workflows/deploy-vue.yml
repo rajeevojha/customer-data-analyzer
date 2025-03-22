@@ -1,7 +1,7 @@
 name: Deploy Vue to Elastic Beanstalk
 on:
   push:
-    branches: [master]  # Runs when you push to master
+    branches: [centralized-db]  # Runs when you push to master
 
 jobs:
   deploy:

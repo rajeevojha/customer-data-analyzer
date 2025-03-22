@@ -1,0 +1,52 @@
+name: Deploy Vue to Elastic Beanstalk
+on:
+  push:
+    branches: [centralized-db]  # Runs when you push to master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Virtual machine GitHub provides
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # Grabs your repo
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Matches our Vue setup
+
+      - name: Install Vue dependencies
+        run: |
+          cd ui/vue
+          npm install
+
+      - name: Build Vue
+        run: |
+          cd ui/vue
+          npm run build  # Creates dist/ folder
+
+      - name: Build Vue app
+        working-directory: ./ui/vue
+        run: npm run build
+
+      - name: Zip Vue app
+        working-directory: .ui/vue
+        run: zip -r vue-app.zip dist .env.local
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1
+
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: vue-app
+          environment_name: VueAppEnv
+          version_label: ${{ github.sha }}  # Unique version per push
+          region: us-west-1
+          deployment_package: ui/vue/vue-app.zip

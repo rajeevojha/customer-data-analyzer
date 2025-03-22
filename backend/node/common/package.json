@@ -1,0 +1,25 @@
+{
+  "name": "customer-data-analyzer",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajeevojha/customer-data-analyzer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rajeevojha/customer-data-analyzer/issues"
+  },
+  "homepage": "https://github.com/rajeevojha/customer-data-analyzer#readme",
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "dotenv": "^16.0.3"
+  }
+}

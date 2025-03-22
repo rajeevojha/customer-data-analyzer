@@ -1,5 +1,6 @@
 {
   "name": "customer-data-analyzer",
+  "type": "module",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -18,7 +19,7 @@
   },
   "homepage": "https://github.com/rajeevojha/customer-data-analyzer#readme",
   "dependencies": {
-    "aws-sdk": "^2.1692.0",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "redis": "^4.7.0"
   }
 }

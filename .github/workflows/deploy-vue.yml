@@ -42,7 +42,7 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: vue-app
-          environment_name: VueAppEnv
+          environment_name: vueappenv
           version_label: ${{ github.sha }}  # Unique version per push
           region: us-west-1
           deployment_package: ui/vue/vue-app.zip

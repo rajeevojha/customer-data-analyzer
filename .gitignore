@@ -1,5 +1,6 @@
 # Terraform
 .env
+docker.env
 **/.terraform/
 **/*.tfstate
 **/*.tfstate.backup
